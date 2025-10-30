@@ -1,0 +1,17 @@
+{"eventid": "cowrie.login.failed", "src_ip": "247.65.179.129", "timestamp": 1761813209.5771892, "username": "admin", "password": "password123", "message": "Login failed: admin/password123"}
+{"eventid": "cowrie.login.failed", "src_ip": "247.65.179.129", "timestamp": 1761813210.8597393, "username": "admin", "password": "password123", "message": "Login failed: admin/password123"}
+{"eventid": "cowrie.login.failed", "src_ip": "247.65.179.129", "timestamp": 1761813212.0532854, "username": "admin", "password": "password123", "message": "Login failed: admin/password123"}
+{"eventid": "cowrie.login.failed", "src_ip": "247.65.179.129", "timestamp": 1761813224.6572073, "username": "admin", "password": "password123", "message": "Login failed: admin/password123"}
+{"eventid": "cowrie.login.failed", "src_ip": "247.65.179.129", "timestamp": 1761813224.7598891, "username": "root", "password": "admin123", "message": "Login failed: root/admin123"}
+{"eventid": "cowrie.login.failed", "src_ip": "247.65.179.129", "timestamp": 1761813224.8614402, "username": "administrator", "password": "123456", "message": "Login failed: administrator/123456"}
+{"eventid": "cowrie.login.failed", "src_ip": "247.65.179.129", "timestamp": 1761813224.9629753, "username": "system", "password": "root", "message": "Login failed: system/root"}
+{"eventid": "cowrie.login.failed", "src_ip": "247.65.179.129", "timestamp": 1761813225.0647094, "username": "admin", "password": "password123", "message": "Login failed: admin/password123"}
+{"eventid": "cowrie.login.failed", "src_ip": "247.65.179.129", "timestamp": 1761813225.1665819, "username": "root", "password": "admin123", "message": "Login failed: root/admin123"}
+{"eventid": "cowrie.login.failed", "src_ip": "26.97.66.116", "timestamp": 1761813255.4897373, "username": "admin", "password": "password123", "message": "Login failed: admin/password123"}
+{"eventid": "cowrie.login.failed", "src_ip": "26.97.66.116", "timestamp": 1761813256.432131, "username": "admin", "password": "password123", "message": "Login failed: admin/password123"}
+{"eventid": "cowrie.login.failed", "src_ip": "26.97.66.116", "timestamp": 1761813265.3740792, "username": "admin", "password": "password123", "message": "Login failed: admin/password123"}
+{"eventid": "cowrie.login.failed", "src_ip": "26.97.66.116", "timestamp": 1761813265.476158, "username": "root", "password": "admin123", "message": "Login failed: root/admin123"}
+{"eventid": "cowrie.login.failed", "src_ip": "26.97.66.116", "timestamp": 1761813265.5778892, "username": "administrator", "password": "123456", "message": "Login failed: administrator/123456"}
+{"eventid": "cowrie.login.failed", "src_ip": "26.97.66.116", "timestamp": 1761813265.6793954, "username": "system", "password": "root", "message": "Login failed: system/root"}
+{"eventid": "cowrie.login.failed", "src_ip": "26.97.66.116", "timestamp": 1761813265.7805321, "username": "admin", "password": "password123", "message": "Login failed: admin/password123"}
+{"eventid": "cowrie.login.failed", "src_ip": "26.97.66.116", "timestamp": 1761813265.8823094, "username": "root", "password": "admin123", "message": "Login failed: root/admin123"}

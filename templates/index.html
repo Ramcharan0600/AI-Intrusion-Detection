@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI IDS</title>
+  <style>
+    body { background: #000; color: #0f0; font-family: monospace; text-align: center; padding: 50px; }
+    h1 { font-size: 2.5em; }
+    .stats { font-size: 1.5em; margin: 20px; }
+    .alert { color: #f00; font-weight: bold; margin: 30px; }
+  </style>
+</head>
+<body>
+  <h1>AI INTRUSION DETECTION – LIVE</h1>
+  <div class="stats">
+    Attacks Detected: <span id="attack_count">0</span> | 
+    IPs Blocked: <span id="blocked_count">0</span> | 
+    Active IPs: <span id="active_ips">0</span>
+  </div>
+  <div class="alert" id="alert">Initializing...</div>
+  
+  <!-- Control Panel -->
+  <div class="control-panel">
+    <div class="sim-form">
+      <h3>🎯 Simulate Real-time Attack</h3>
+      <div class="last-attack" id="last_attack">No attacks yet</div>
+      <button onclick="simulateRandom()" class="action-btn green">⚡ Generate New Attack</button>
+    </div>
+    
+    <div class="manual-block">
+      <h3>🛡️ Manual Response Center</h3>
+      <div class="active-threats" id="active_threats">No active threats</div>
+      <input type="text" id="block_ip" placeholder="Enter IP to block" readonly>
+      <button onclick="manualBlock()" class="action-btn pulse">🚫 Block Suspicious IP</button>
+    </div>
+  </div>
+
+  <style>
+    .last-attack, .active-threats {
+      margin: 10px;
+      padding: 10px;
+      background: #111;
+      border: 1px solid #0f0;
+      border-radius: 4px;
+      color: #0f0;
+    }
+    .active-threats {
+      border-color: #f55;
+      color: #f55;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    .action-btn.pulse {
+      background: #500;
+    }
+  </style>
+
+  <h2>Blocked IPs</h2>
+  <div class="blocked-section">
+    <div class="stats" id="blocked_list">(none)</div>
+    <button onclick="unblockAll()" class="action-btn red">Clear All Blocks</button>
+  </div>
+
+  <h3>Recent Events</h3>
+  <pre id="recent_events" style="max-height:200px;overflow:auto;background:#111;padding:10px;border-radius:6px;color:#f88"></pre>
+
+  <!-- Attack Simulation Modal -->
+  <div id="attack_modal" class="modal">
+    <div class="modal-content">
+      <h2>🚨 SIMULATING ATTACK</h2>
+      <div class="attack-grid">
+        <div class="attack-map" id="attack_map">
+          <div class="map-container">
+            <div class="map-marker source" id="attack_source"></div>
+            <div class="map-marker target" id="attack_target"></div>
+            <div class="attack-line" id="attack_line"></div>
+          </div>
+        </div>
+        <div class="matrix-animation" id="matrix_code"></div>
+        <div class="packet-visualization" id="packet_vis"></div>
+      </div>
+      <div class="attack-status" id="attack_status">Initializing attack simulation...</div>
+      <div class="attack-details" id="attack_details"></div>
+    </div>
+  </div>
+
+  <style>
+    .blocked-section { margin: 20px; }
+    
+    /* Modal Size & Position */
+    .modal-content {
+      margin: 5% auto;
+      width: 90%;
+      max-width: 900px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    
+    /* Attack Grid Layout */
+    .attack-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 15px;
+      margin: 20px 0;
+      min-height: 400px;
+    }
+    
+    /* Map Styles */
+    .attack-map {
+      grid-column: 1 / -1;
+      height: 250px;
+      background: #001;
+      border: 1px solid #0f0;
+      border-radius: 5px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 10px #0f0;
+    }
+    .map-container {
+      width: 100%;
+      height: 100%;
+      background: 
+        linear-gradient(to right, #0f02 1px, transparent 1px) 0 0 / 50px 100%,
+        linear-gradient(to bottom, #0f02 1px, transparent 1px) 0 0 / 100% 50px;
+      position: relative;
+    }
+    .map-marker {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      position: absolute;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px currentColor;
+    }
+    .map-marker.source { 
+      background: #f00;
+      color: #f00;
+    }
+    .map-marker.target { 
+      background: #0f0;
+      color: #0f0;
+    }
+    .attack-line {
+      position: absolute;
+      height: 2px;
+      background: transparent;
+      transform-origin: left center;
+    }
+    .attack-dot {
+      width: 6px;
+      height: 6px;
+      background: #f00;
+      border-radius: 50%;
+      position: absolute;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 8px #f00;
+    }
+    
+    /* Packet Visualization */
+    .packet-visualization {
+      height: 100px;
+      background: #000;
+      border: 1px solid #0f0;
+      border-radius: 5px;
+      overflow: hidden;
+      position: relative;
+    }
+    .packet {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #f00;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    /* Attack Pattern Details */
+    .attack-details {
+      margin-top: 10px;
+      padding: 10px;
+      background: #001;
+      border: 1px solid #0f0;
+      border-radius: 5px;
+      font-family: monospace;
+      text-align: left;
+    }
+    .control-panel {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin: 30px;
+      padding: 20px;
+      background: #111;
+      border-radius: 8px;
+    }
+    
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 1000;
+    }
+    .modal-content {
+      position: relative;
+      margin: 10% auto;
+      padding: 20px;
+      width: 80%;
+      max-width: 600px;
+      background: #000;
+      border: 2px solid #0f0;
+      border-radius: 10px;
+      color: #0f0;
+      text-align: center;
+    }
+    .matrix-animation {
+      height: 200px;
+      overflow: hidden;
+      font-family: monospace;
+      font-size: 14px;
+      line-height: 1.2;
+      color: #0f0;
+      text-align: left;
+      padding: 10px;
+      background: #000;
+      border-radius: 5px;
+      margin: 15px 0;
+    }
+    .attack-status {
+      margin-top: 15px;
+      padding: 10px;
+      background: #111;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    
+    /* Alert Animation */
+    @keyframes alertPulse {
+      0% { background: #300; }
+      50% { background: #500; }
+      100% { background: #300; }
+    }
+    .alert-active {
+      animation: alertPulse 2s infinite;
+    }
+    .sim-form, .manual-block {
+      text-align: center;
+    }
+    input {
+      background: #000;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 5px 10px;
+      margin: 5px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    input:focus {
+      outline: none;
+      border-color: #0f0;
+      box-shadow: 0 0 5px #0f0;
+    }
+    .action-btn {
+      background: #300;
+      color: #f55;
+      border: 1px solid #f55;
+      padding: 5px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: monospace;
+      margin: 10px;
+      min-width: 100px;
+    }
+    .action-btn:hover {
+      background: #500;
+    }
+    .action-btn.green {
+      background: #030;
+      color: #0f0;
+      border-color: #0f0;
+    }
+    .action-btn.green:hover {
+      background: #050;
+    }
+    .action-btn.red {
+      background: #300;
+      color: #f55;
+      border-color: #f55;
+    }
+    .action-btn.red:hover {
+      background: #500;
+    }
+    .ip-btn {
+      display: inline-block;
+      margin: 0 5px;
+      color: #f55;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .ip-btn:hover {
+      color: #f99;
+    }
+  </style>
+
+  <script>
+    function validateIP(ip) {
+      return /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ip);
+    }
+
+    async function showMessage(msg, isError = false) {
+      const alertEl = document.getElementById('alert');
+      alertEl.innerText = msg;
+      alertEl.style.color = isError ? '#f55' : '#0f0';
+      setTimeout(() => update(), 2000);  // Restore normal alert after 2s
+    }
+
+    // Attack Patterns
+    const ATTACK_PATTERNS = {
+      bruteforce: {
+        name: "Brute Force Attack",
+        description: "Attempting common username/password combinations",
+        usernames: ["admin", "root", "administrator", "system"],
+        passwords: ["password123", "admin123", "123456", "root"],
+        delay: 800
+      },
+      dictionary: {
+        name: "Dictionary Attack",
+        description: "Using dictionary-based credentials",
+        usernames: ["ubuntu", "postgres", "mysql", "apache"],
+        passwords: ["qwerty123", "letmein", "welcome1", "database"],
+        delay: 600
+      },
+      targeted: {
+        name: "Targeted Attack",
+        description: "Focused attempt with specific credentials",
+        usernames: ["jenkins", "tomcat", "oracle", "webadmin"],
+        passwords: ["jenkins123", "tomcat123", "oracle123", "admin123"],
+        delay: 1000
+      }
+    };
+
+    // Location Database (sample)
+    const LOCATIONS = [
+      { country: "China", coords: [20, 30] },
+      { country: "Russia", coords: [40, 20] },
+      { country: "Brazil", coords: [60, 70] },
+      { country: "Nigeria", coords: [30, 60] },
+      { country: "India", coords: [50, 40] }
+    ];
+
+    // Matrix animation
+    function generateMatrix() {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()";
+      const lines = [];
+      for (let i = 0; i < 10; i++) {
+        let line = '';
+        for (let j = 0; j < 50; j++) {
+          line += chars[Math.floor(Math.random() * chars.length)];
+        }
+        lines.push(line);
+      }
+      return lines.join('\n');
+    }
+
+    function updateMatrix() {
+      const matrix = document.getElementById('matrix_code');
+      if (matrix) {
+        matrix.innerText = generateMatrix();
+      }
+    }
+
+    // Map and Packet Visualization
+    function initializeAttackMap(sourceIP) {
+      const mapContainer = document.querySelector('.map-container');
+      const source = document.getElementById('attack_source');
+      const target = document.getElementById('attack_target');
+      const line = document.getElementById('attack_line');
+      
+      // Clear any existing attack dots
+      document.querySelectorAll('.attack-dot').forEach(dot => dot.remove());
+      
+      // Random source location
+      const location = LOCATIONS[Math.floor(Math.random() * LOCATIONS.length)];
+      const [x, y] = location.coords;
+      
+      // Position markers
+      source.style.left = x + '%';
+      source.style.top = y + '%';
+      target.style.left = '90%';
+      target.style.top = '50%';
+      
+      // Calculate path
+      const dx = 90 - x;
+      const dy = 50 - y;
+      const length = Math.sqrt(dx * dx + dy * dy);
+      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+      
+      line.style.width = length + '%';
+      line.style.left = x + '%';
+      line.style.top = y + '%';
+      line.style.transform = `rotate(${angle}deg)`;
+      
+      // Start dot animation
+      let progress = 0;
+      const dotCount = 5;
+      const dots = [];
+      
+      for (let i = 0; i < dotCount; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'attack-dot';
+        mapContainer.appendChild(dot);
+        dots.push(dot);
+      }
+      
+      function updateDots() {
+        dots.forEach((dot, index) => {
+          const offset = (progress + (index * (100 / dotCount))) % 100;
+          const dotX = x + (dx * offset / 100);
+          const dotY = y + (dy * offset / 100);
+          dot.style.left = dotX + '%';
+          dot.style.top = dotY + '%';
+        });
+        progress = (progress + 1) % 100;
+      }
+      
+      const animationInterval = setInterval(updateDots, 50);
+      return { location, cleanup: () => {
+        clearInterval(animationInterval);
+        dots.forEach(dot => dot.remove());
+      }};
+    }
+
+    function createPacket() {
+      const packet = document.createElement('div');
+      packet.className = 'packet';
+      document.getElementById('packet_vis').appendChild(packet);
+      return packet;
+    }
+
+    function animatePacket() {
+      const packet = createPacket();
+      const start = Math.random() * 100;
+      packet.style.left = '0%';
+      packet.style.top = start + '%';
+      
+      packet.animate([
+        { left: '0%', opacity: 1 },
+        { left: '100%', opacity: 0 }
+      ], {
+        duration: 1000,
+        easing: 'linear'
+      }).onfinish = () => packet.remove();
+    }
+
+    // Real-time attack simulation
+    async function simulateRealAttack(ip, attempts) {
+      const modal = document.getElementById('attack_modal');
+      const status = document.getElementById('attack_status');
+      const details = document.getElementById('attack_details');
+      modal.style.display = 'block';
+      
+      // Initialize visualizations
+      const matrixInterval = setInterval(updateMatrix, 100);
+      const packetInterval = setInterval(animatePacket, 200);
+      
+      // Setup attack pattern
+      const patterns = Object.values(ATTACK_PATTERNS);
+      const pattern = patterns[Math.floor(Math.random() * patterns.length)];
+      
+      // Initialize map
+      const { location, cleanup } = initializeAttackMap(ip);
+      details.innerHTML = `
+        <strong>Attack Origin:</strong> ${location.country}<br>
+        <strong>Attack Type:</strong> ${pattern.name}<br>
+        <strong>Pattern:</strong> ${pattern.description}<br>
+        <strong>Target:</strong> Local IDS (127.0.0.1:5000)
+      `;
+      
+      for (let i = 1; i <= attempts; i++) {
+        const username = pattern.usernames[i % pattern.usernames.length];
+        const password = pattern.passwords[i % pattern.passwords.length];
+        
+        status.innerHTML = `
+          <strong>Attempt ${i}/${attempts}</strong><br>
+          Source IP: ${ip}<br>
+          Trying: ${username}:${password}
+        `;
+        
+        try {
+          // Make an actual HTTP request to trigger intrusion detection
+          await fetch(`/simulate?ip=${encodeURIComponent(ip)}&n=1`);
+          await new Promise(r => setTimeout(r, pattern.delay));
+        } catch(e) {
+          console.error('Attack simulation failed:', e);
+        }
+      }
+      
+      // Clean up
+      clearInterval(matrixInterval);
+      clearInterval(packetInterval);
+      cleanup(); // Clean up map animations
+      status.innerHTML = `<strong>Attack Complete!</strong><br>Generated ${attempts} failed login attempts`;
+      
+      // Keep modal visible longer to show the results
+      setTimeout(() => {
+        modal.style.display = 'none';
+      }, 2500);
+    }
+
+    function generateRandomIP() {
+      // Generate realistic-looking IPs
+      const segments = [];
+      for (let i = 0; i < 4; i++) {
+        segments.push(Math.floor(Math.random() * 256));
+      }
+      return segments.join('.');
+    }
+
+    let currentSuspiciousIP = null;
+
+    async function simulateRandom() {
+      const ip = generateRandomIP();
+      const attempts = Math.floor(Math.random() * 2) + 2; // 2-3 attempts
+      
+      showMessage(`⚡ New attack detected from ${ip}...`);
+      document.getElementById('last_attack').innerText = `Incoming attack from: ${ip}`;
+      
+      try {
+        // Start real-time attack simulation with matrix effect
+        await simulateRealAttack(ip, attempts);
+        
+        // Update the manual block section
+        currentSuspiciousIP = ip;
+        document.getElementById('block_ip').value = ip;
+        document.getElementById('active_threats').innerHTML = 
+          `⚠️ Suspicious Activity Detected!<br>IP: ${ip}<br>${attempts} failed login attempts`;
+        
+        // Show alert with visual effect
+        const alertEl = document.getElementById('alert');
+        alertEl.innerText = `🚨 ALERT: Suspicious activity from ${ip}`;
+        alertEl.classList.add('alert-active');
+        setTimeout(() => alertEl.classList.remove('alert-active'), 3000);
+        
+      } catch(e) {
+        console.error('Simulation failed:', e);
+        showMessage('❌ Simulation failed: ' + e.message, true);
+      }
+    }
+
+    async function manualBlock() {
+      const ip = currentSuspiciousIP;
+      
+      if (!ip) {
+        showMessage('⚠️ No suspicious IP to block', true);
+        return;
+      }
+      
+      showMessage(`🛡️ Initiating manual block for ${ip}...`);
+      
+      try {
+        // Force immediate block with 6 rapid attempts
+        const r = await fetch(`/simulate?ip=${encodeURIComponent(ip)}&n=6`);
+        const d = await r.json();
+        
+        // Clear the manual block section
+        currentSuspiciousIP = null;
+        document.getElementById('block_ip').value = '';
+        document.getElementById('active_threats').innerText = 'No active threats';
+        
+        showMessage(`✅ Successfully blocked malicious IP: ${ip}`);
+        update();
+      } catch(e) {
+        console.error('Manual block failed:', e);
+        showMessage('❌ Block failed: ' + e.message, true);
+      }
+    }
+
+    async function unblock(ip) {
+      try {
+        const r = await fetch(`/unblock?ip=${encodeURIComponent(ip)}`);
+        const d = await r.json();
+        update();
+      } catch(e) {
+        console.error('Unblock failed:', e);
+      }
+    }
+
+    async function unblockAll() {
+      try {
+        const r = await fetch('/unblock');
+        const d = await r.json();
+        update();
+      } catch(e) {
+        console.error('Unblock all failed:', e);
+      }
+    }
+
+    async function update() {
+      try {
+        const s = await fetch('/status');
+        const d = await s.json();
+        document.getElementById('attack_count').innerText = d.total_attacks;
+        document.getElementById('blocked_count').innerText = d.blocked_count;
+        document.getElementById('active_ips').innerText = d.active_ips;
+        document.getElementById('alert').innerText = d.alert;
+      } catch(e) {}
+
+      try {
+        const b = await fetch('/blocked');
+        const bd = await b.json();
+        const listEl = document.getElementById('blocked_list');
+        if (bd.blocked && bd.blocked.length) {
+          listEl.innerHTML = bd.blocked
+            .map(ip => `<span class="ip-btn" onclick="unblock('${ip}')">${ip}</span>`)
+            .join(', ');
+        } else {
+          listEl.innerHTML = '(none)';
+        }
+        const recentEl = document.getElementById('recent_events');
+        // Show newest events first
+        recentEl.innerText = (bd.recent || []).reverse().join('\n');
+        recentEl.scrollTop = 0; // Keep scrolled to top to see newest
+      } catch(e) {}
+    }
+    
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 's' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        simulate();
+      }
+    });
+
+    setInterval(update, 2000);
+    update();
+  </script>
+</body>
+</html>
