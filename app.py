@@ -144,6 +144,27 @@ def status():
     })
 
 
+@app.route('/active')
+def active():
+    """Return top active IPs with counts and last-seen timestamps."""
+    check_logs()
+    try:
+        items = []
+        for ip in active_ips:
+            items.append((ip, login_counts.get(ip, 0), timestamps.get(ip, 0)))
+        items.sort(key=lambda x: x[1], reverse=True)
+        top = [
+            {
+                'ip': ip,
+                'count': count,
+                'last_seen': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(ts)) if ts else ''
+            } for ip, count, ts in items[:20]
+        ]
+    except Exception:
+        top = []
+    return jsonify({'active': top})
+
+
 @app.route('/blocked')
 def blocked():
     """Return JSON with the list of blocked IPs and recent blocked events (tail of blocked_ips.txt)."""
@@ -250,6 +271,7 @@ def simulate():
         'total_attacks': attack_count,
         'blocked_count': len(blocked_ips)
     })
+
 
 if __name__ == '__main__':
     print("OPEN: http://127.0.0.1:5000")

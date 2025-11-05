@@ -1,0 +1,67 @@
+/* Main layout and colors (moved from template) */
+body { background: #000; color: #0f0; font-family: monospace; text-align: center; padding: 50px; }
+h1 { font-size: 2.5em; }
+.stats { font-size: 1.5em; margin: 20px; }
+.alert { color: #f00; font-weight: bold; margin: 30px; }
+
+/* Control panel small boxes */
+.last-attack, .active-threats {
+  margin: 10px;
+  padding: 10px;
+  background: #111;
+  border: 1px solid #0f0;
+  border-radius: 4px;
+  color: #0f0;
+}
+.active-threats { border-color: #f55; color: #f55; }
+
+@keyframes pulse { 0%{transform:scale(1);}50%{transform:scale(1.05);}100%{transform:scale(1);} }
+.pulse { animation: pulse 2s infinite; }
+.action-btn.pulse { background: #500; }
+
+.blocked-section { margin: 20px; }
+
+/* Modal size & attack grid */
+.modal-content { margin: 5% auto; width: 90%; max-width: 900px; max-height: 90vh; overflow-y: auto; }
+.attack-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 15px; margin: 20px 0; min-height: 400px; }
+
+/* Map styles */
+.attack-map { grid-column: 1 / -1; height: 250px; background: #001; border: 1px solid #0f0; border-radius: 5px; position: relative; overflow: hidden; box-shadow: 0 0 10px #0f0; }
+.map-container { width:100%; height:100%; background: linear-gradient(to right, #0f02 1px, transparent 1px) 0 0 / 50px 100%, linear-gradient(to bottom, #0f02 1px, transparent 1px) 0 0 / 100% 50px; position: relative; }
+.map-marker { width:12px; height:12px; border-radius:50%; position:absolute; transform:translate(-50%,-50%); box-shadow:0 0 10px currentColor; }
+.map-marker.source { background:#f00; color:#f00; }
+.map-marker.target { background:#0f0; color:#0f0; }
+.attack-line { position:absolute; height:2px; background:transparent; transform-origin:left center; }
+.attack-dot { width:6px; height:6px; background:#f00; border-radius:50%; position:absolute; transform:translate(-50%,-50%); box-shadow:0 0 8px #f00; }
+
+.packet-visualization { height:100px; background:#000; border:1px solid #0f0; border-radius:5px; overflow:hidden; position:relative; }
+.packet { position:absolute; width:4px; height:4px; background:#f00; border-radius:50%; transform:translate(-50%,-50%); }
+
+.attack-details { margin-top:10px; padding:10px; background:#001; border:1px solid #0f0; border-radius:5px; font-family:monospace; text-align:left; }
+.control-panel { display:flex; justify-content:center; gap:40px; margin:30px; padding:20px; background:#111; border-radius:8px; }
+
+.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:1000; }
+.modal-content { position:relative; margin:10% auto; padding:20px; width:80%; max-width:600px; background:#000; border:2px solid #0f0; border-radius:10px; color:#0f0; text-align:center; }
+.matrix-animation { height:200px; overflow:hidden; font-family:monospace; font-size:14px; line-height:1.2; color:#0f0; text-align:left; padding:10px; background:#000; border-radius:5px; margin:15px 0; }
+.attack-status { margin-top:15px; padding:10px; background:#111; border-radius:5px; font-weight:bold; }
+
+@keyframes alertPulse { 0%{background:#300;}50%{background:#500;}100%{background:#300;} }
+.alert-active { animation: alertPulse 2s infinite; }
+.sim-form, .manual-block { text-align:center; }
+
+input { background:#000; color:#0f0; border:1px solid #0f0; padding:5px 10px; margin:5px; border-radius:4px; font-family:monospace; }
+input:focus { outline:none; border-color:#0f0; box-shadow:0 0 5px #0f0; }
+.action-btn { background:#300; color:#f55; border:1px solid #f55; padding:5px 15px; border-radius:4px; cursor:pointer; font-family:monospace; margin:10px; min-width:100px; }
+.action-btn:hover { background:#500; }
+.action-btn.green { background:#030; color:#0f0; border-color:#0f0; }
+.action-btn.green:hover { background:#050; }
+.action-btn.red { background:#300; color:#f55; border-color:#f55; }
+.action-btn.red:hover { background:#500; }
+.ip-btn { display:inline-block; margin:0 5px; color:#f55; text-decoration:underline; cursor:pointer; }
+.ip-btn:hover { color:#f99; }
+
+/* small responsive tweaks */
+@media (max-width:800px) {
+  .control-panel { flex-direction:column; gap:10px; }
+  body { padding: 20px; }
+}
