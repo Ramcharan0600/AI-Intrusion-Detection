@@ -50,7 +50,7 @@ A sophisticated real-time intrusion detection system with visual attack simulati
    ```
 
 3. **Running the Application**
-   ```bash
+   ```git bash
    python app.py
    ```
    The application will be available at `http://localhost:5000`
@@ -115,7 +115,12 @@ real_ids_app/
 ├── blocked_ips.txt    # Storage for blocked IPs
 ├── requirements.txt   # Python dependencies
 ├── templates/         # Frontend templates
-│   └── index.html    # Main dashboard
+│   └── index.html     # Main dashboard
+├── static/         
+│  ├── css/         # Page styles
+│   └── style.css
+│  ├── js/         # Interactive JS
+│   └── dashboard.js      
 └── logs/             # Log files
     └── cowrie/       # Honeypot logs
 ```
